@@ -62,6 +62,10 @@ class Desk(val platform: Platform, val scope: CoroutineScope) {
     }
     fun verify(code: String) = action {
         val auth = api.send<Map<String,String>, Auth>("/v1/auth/verify", mapOf("phone" to "+91" + phone, "code" to code))
+        if(user!=null&&user!!.id!=auth.user.id) {
+            if(queue.isNotEmpty())throw ApiError(409,"Sign in with the original account to sync offline expenses before switching accounts.")
+            trips=emptyList();selectedId="";paying=null;receipt=null;deleted=null;platform.write("avatar",null)
+        }
         api.token = auth.token; platform.write("session", auth.token); user = auth.user; persist()
         screen = "verified"; delay(700)
         if (auth.user.name.isEmpty()) screen = "profile" else { screen = "home"; refresh() }
