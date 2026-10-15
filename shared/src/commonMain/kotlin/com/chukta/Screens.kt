@@ -219,7 +219,7 @@ import io.ktor.http.encodeURLParameter
         Txt("Expense deleted",13);SmallAction("Undo"){d.addExpense(deleted);d.deleted=null}
     }}
     if(t.expenses.isEmpty())Panel(color=Soft,padding=24){Txt("Every kharcha, in one place.",24,bold=true,display=true);Spacer(Modifier.height(10.dp));Txt("Add your first expense. We'll split it equally and keep everyone's hisaab clear.",14,Muted)}
-    t.expenses.groupBy{it.date}.toSortedMap(compareByDescending{it}).forEach { (date,list) ->
+    t.expenses.groupBy{it.date}.entries.sortedByDescending{it.key}.forEach { (date,list) ->
         Row(Modifier.fillMaxWidth().padding(top=6.dp),horizontalArrangement=Arrangement.SpaceBetween){Txt(date,14,bold=true);Txt(money(list.sumOf{it.amount}),12,Muted)}
         Panel(padding=14){
             list.reversed().forEachIndexed { i,e ->
