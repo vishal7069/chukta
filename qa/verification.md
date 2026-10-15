@@ -25,7 +25,6 @@ Screenshots are in design/android-login.png, design/android-home.png, design/and
 
 - Public HTTPS API host with a persistent database volume.
 - SMS provider secrets; current local OTP is a development code.
-- Git authentication to push the locally prepared source to GitHub.
 - Mac/Xcode build verification and Apple signing for the iPhone app. iOS has not been compiled on this Windows host.
 - App-store policy links, bank/provider verification if required, and external notification/reminder providers.
 

@@ -1,6 +1,6 @@
 # Chukta
 
-Download the development APK and complete source ZIP from [Releases](https://github.com/vishal7069/chukta/releases). The APK currently requires a local test API or your own HTTPS backend. Main source-history upload and GitHub CI are pending Git authentication; the complete implementation is included in the source ZIP.
+Download the development APK and complete source ZIP from [Releases](https://github.com/vishal7069/chukta/releases). The APK currently requires a local test API or your own HTTPS backend. The full source is available on main, with Android, backend and Mac/iOS build jobs in GitHub Actions.
 
 Native Android and iPhone expense-sharing app built from the **Chukta • App flow** and **Chukta • Case study** pages in the supplied Figma file.
 
