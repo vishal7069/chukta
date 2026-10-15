@@ -1,5 +1,7 @@
 # Chukta
 
+Download the development APK and complete source ZIP from [Releases](https://github.com/vishal7069/chukta/releases). The APK currently requires a local test API or your own HTTPS backend. Main source-history upload and GitHub CI are pending Git authentication; the complete implementation is included in the source ZIP.
+
 Native Android and iPhone expense-sharing app built from the **Chukta • App flow** and **Chukta • Case study** pages in the supplied Figma file.
 
 Android and iOS share the Kotlin Multiplatform / Compose UI, navigation, data models and ledger. Android uses a Kotlin activity; iOS embeds the shared UI in a SwiftUI host. The backend is Node 24 and persistent SQLite.
