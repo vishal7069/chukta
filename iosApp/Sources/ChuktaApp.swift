@@ -91,7 +91,7 @@ struct NativeDesk: UIViewControllerRepresentable {
                 let scaled = UIGraphicsImageRenderer(size: size).image { _ in image.draw(in: CGRect(origin: .zero, size: size)) }
                 guard let data = scaled.jpegData(compressionQuality: 0.75) else { return }
                 let documents = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-                let path = documents.appendingPathComponent("avatar.jpg")
+                let path = documents.appendingPathComponent("photo-" + UUID().uuidString + ".jpg")
                 do { try data.write(to: path); DispatchQueue.main.async { _ = self.photoResult?(path.absoluteString) } } catch {}
             }
         }
