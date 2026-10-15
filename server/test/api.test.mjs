@@ -37,6 +37,7 @@ test('authenticated trip, invite approval, idempotent expense and settlement', a
     trip=(await req('/v1/trips/'+trip.id+'/settlements',owner.token,payment)).body;
     assert.equal(trip.settlements[0].verification,'user_recorded');
     assert.equal((await req('/v1/trips/'+trip.id+'/settlements',owner.token,payment)).body.settlements.length,1);
+    assert.equal((await req('/v1/trips/'+trip.id+'/settlements',friend.token,{...payment,id:'received-payment-1',amount:10000})).status,200);
     assert.equal((await req('/v1/trips/'+trip.id+'/settlements',owner.token,{...payment,id:'test-payment-2',amount:999999999})).status,400);
     assert.equal((await req('/v1/trips/'+trip.id+'/close',owner.token,{})).status,409);
     const kitty=(await req('/v1/trips',owner.token,{name:'Spiti',members:['Riya'],kitty:true})).body;

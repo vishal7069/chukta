@@ -268,7 +268,10 @@ fun categoryIcon(category: String) = when(category){"Stay"->"89de1.svg";"Travel"
     }
     val others=transfers.filter{it.from!=t.ownId(d.user)}
     if(others.isNotEmpty()||t.settlements.isNotEmpty())Txt("Others",13,Muted)
-    others.forEach { p -> Panel{Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween){Txt("${t.members.first{it.id==p.from}.name} → ${t.members.first{it.id==p.to}.name}",14,bold=true);Txt(money(p.amount),14,bold=true)}} }
+    others.forEach { p -> Panel{Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){
+        Column(Modifier.weight(1f)){Txt("${t.members.first{it.id==p.from}.name} → ${t.members.first{it.id==p.to}.name}",14,bold=true);Txt(money(p.amount),14,bold=true)}
+        if(p.to==t.ownId(d.user)||t.ownerId==d.user?.id)SmallAction(if(p.to==t.ownId(d.user))"Received" else "Record"){d.paying=p}
+    }} }
     t.settlements.forEach { s -> Panel{Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween){Txt("${t.members.first{it.id==s.from}.name} → ${t.members.first{it.id==s.to}.name}",13,Muted);Row(verticalAlignment=Alignment.CenterVertically){Asset("7d286.svg",14f);Txt(" Settled",12,bold=true)}}} }
     Txt("How it adds up",13,Muted)
     Panel{t.balances().forEachIndexed{i,b->Row(Modifier.fillMaxWidth().padding(vertical=10.dp),verticalAlignment=Alignment.CenterVertically){

@@ -215,7 +215,7 @@ export function createApp(options = {}) {
             if (trip.settlements.some(s => s.id === requestId)) result = trip;
             else {
               const own = member(trip, user), from = clean(body.from, 64), to = clean(body.to, 64);
-              if (from !== own.id && trip.ownerId !== user.id) fail(403, 'You can only record your own payment');
+              if (from !== own.id && to !== own.id && trip.ownerId !== user.id) fail(403, 'You can only record a payment you sent or received');
               const due = ledger(trip).transfers.find(t => t.from === from && t.to === to);
               if (!due || !Number.isSafeInteger(body.amount) || body.amount <= 0 || body.amount > due.amount) fail(400, 'Payment exceeds the outstanding balance');
               if (!['cash','upi_manual'].includes(body.method)) fail(400, 'Choose cash or a manually confirmed UPI payment');

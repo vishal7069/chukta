@@ -112,6 +112,8 @@ import kotlin.io.encoding.ExperimentalEncodingApi
 }
 @Composable fun PaySheet(d: Desk,t: Trip) {
     val p=d.paying ?: return;val recipient=t.members.first{it.id==p.to}
+    val sender=t.members.first{it.id==p.from}
+    val sending=p.from==t.ownId(d.user)
     var value by remember(p){mutableStateOf((p.amount/100).toString()+if(p.amount%100>0)"."+ (p.amount%100).toString().padStart(2,'0') else "")}
     var upi by remember(recipient.upi){mutableStateOf(recipient.upi)}
     var edit by remember{mutableStateOf(false)};var qr by remember{mutableStateOf(false)};var confirm by remember{mutableStateOf<String?>(null)}
@@ -122,8 +124,9 @@ import kotlin.io.encoding.ExperimentalEncodingApi
     val uri="upi://pay?pa=${upi.encodeURLParameter()}&pn=${recipient.name.encodeURLParameter()}&am=${amount/100}.${(amount%100).toString().padStart(2,'0')}&cu=INR&tn=${("Chukta "+t.name).encodeURLParameter()}"
     ModalBottomSheet(onDismissRequest={d.paying=null},sheetState=rememberModalBottomSheetState(skipPartiallyExpanded=true),containerColor=Color.White,dragHandle={Box(Modifier.padding(top=10.dp,bottom=18.dp).size(40.dp,5.dp).background(Line,RoundedCornerShape(3.dp)))}) {
         Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal=24.dp).padding(bottom=24.dp),verticalArrangement=Arrangement.spacedBy(14.dp)) {
-            Txt("Pay ${recipient.name.substringBefore(' ')}",28,bold=true,display=true)
+            Txt(if(sending)"Pay ${recipient.name.substringBefore(' ')}" else "Record payment",28,bold=true,display=true)
             Txt("${t.name} · payment ${t.settlements.size+1}",13,Muted)
+            if(!sending)Txt("${sender.name} → ${recipient.name}",14,bold=true)
             Row(Modifier.fillMaxWidth().background(Paper,RoundedCornerShape(18.dp)).padding(14.dp),verticalAlignment=Alignment.CenterVertically) {
                 Avatar(recipient.name);Spacer(Modifier.width(12.dp));Column(Modifier.weight(1f)){Txt(recipient.name,15,bold=true);Txt(upi.ifEmpty{"UPI ID needed"},12,Muted)}
                 Box(Modifier.size(40.dp).clickable(enabled=validUpi){d.platform.copy(upi);d.notice="UPI ID copied"},contentAlignment=Alignment.Center){Asset("7c47e.svg",20f,description="Copy UPI ID")}
@@ -132,10 +135,11 @@ import kotlin.io.encoding.ExperimentalEncodingApi
             if(edit)Field(value,{value=it},"Amount",numeric=true)
             else Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){Txt(money(amount),48,bold=true,display=true);SmallAction("Edit"){edit=true}}
             Txt("Pay part now and the rest later, if you like.",12,Muted)
-            Primary("Pay ${money(amount)}",valid&&validUpi&&!d.busy){
-                if(d.platform.openUrl(uri))confirm="upi_manual" else d.notice="No UPI app found. Use the QR, copy the ID, or record a cash payment."
+            Primary(if(sending)"Pay ${money(amount)}" else "Record ${money(amount)}",valid&&(!sending||validUpi)&&!d.busy){
+                if(!sending)confirm="upi_manual"
+                else if(d.platform.openUrl(uri))confirm="upi_manual" else d.notice="No UPI app found. Use the QR, copy the ID, or record a cash payment."
             }
-            Txt("Opens your UPI app. You come back here to confirm.",11,Muted,modifier=Modifier.fillMaxWidth(),align=TextAlign.Center)
+            Txt(if(sending)"Opens your UPI app. You come back here to confirm." else "Record money already paid; no transfer happens here.",11,Muted,modifier=Modifier.fillMaxWidth(),align=TextAlign.Center)
             Row(horizontalArrangement=Arrangement.spacedBy(10.dp)){
                 listOf("Show QR" to "3cf5b.svg","Copy UPI ID" to "4d5a1.svg","Paid in cash" to "de163.svg").forEachIndexed { i,(label,file) ->
                     Column(Modifier.weight(1f).height(76.dp).background(Paper,RoundedCornerShape(16.dp)).clickable {
@@ -150,7 +154,7 @@ import kotlin.io.encoding.ExperimentalEncodingApi
     confirm?.let { method ->
         AlertDialog(onDismissRequest={confirm=null},title={Txt(if(method=="cash")"Record cash payment?" else "Confirm your UPI payment",22,bold=true,display=true)},text={
             Column(verticalArrangement=Arrangement.spacedBy(12.dp)){
-                Txt(if(method=="cash")"Confirm you handed ${money(amount)} to ${recipient.name}." else "Check that your UPI app shows a successful payment, then enter its reference. Chukta records your confirmation.")
+                Txt(if(method=="cash")"Confirm ${if(sending)"you" else sender.name} handed ${money(amount)} to ${recipient.name}." else "Check the successful UPI payment, then enter its reference. Chukta records your confirmation.")
                 if(method=="upi_manual")Field(reference,{reference=it.take(100)},"UPI transaction reference")
             }
         },confirmButton={TextButton(enabled=valid&&!d.busy&&(method=="cash"||reference.isNotBlank()),onClick={confirm=null;d.settle(amount,method,reference)}){Txt("Confirm payment",bold=true)}},dismissButton={TextButton(onClick={confirm=null}){Txt("Cancel")}})
@@ -164,7 +168,7 @@ import kotlin.io.encoding.ExperimentalEncodingApi
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(24.dp),horizontalAlignment=Alignment.CenterHorizontally) {
             Box(Modifier.padding(top=16.dp,bottom=24.dp).size(116.dp).rotate(6f).shadow(16.dp,RoundedCornerShape(36.dp)).background(Ink,RoundedCornerShape(36.dp)),contentAlignment=Alignment.Center){Asset("fd27b.svg",52f,44f)}
             Txt("Hisaab chukta!",40,bold=true,display=true)
-            Spacer(Modifier.height(12.dp));Txt("You paid ${recipient.name.substringBefore(' ')} ${money(receipt.amount)} for ${t.name}.",15,modifier=Modifier.fillMaxWidth(),align=TextAlign.Center)
+            Spacer(Modifier.height(12.dp));Txt("${if(receipt.from==t.ownId(d.user))"You" else t.members.first{it.id==receipt.from}.name} paid ${if(receipt.to==t.ownId(d.user))"you" else recipient.name.substringBefore(' ')} ${money(receipt.amount)} for ${t.name}.",15,modifier=Modifier.fillMaxWidth(),align=TextAlign.Center)
             Spacer(Modifier.height(20.dp))
             Panel{LineRow("To",recipient.name);DividerLine();LineRow("Amount",money(receipt.amount));DividerLine();LineRow(if(receipt.method=="cash")"Method" else "UPI ref",if(receipt.method=="cash")"Cash" else receipt.reference);DividerLine();LineRow("When",d.platform.formatDate(receipt.date))}
             Spacer(Modifier.height(20.dp))
