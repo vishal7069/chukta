@@ -38,7 +38,7 @@ struct NativeDesk: UIViewControllerRepresentable {
         let controller = MainViewControllerKt.MainViewController(
             apiUrl: url,
             read: { Vault.read($0) },
-            write: { key, value in Vault.write(key, value); return KotlinUnit() },
+            write: { key, value in Vault.write(key, value) },
             openUrl: { text in
                 guard let url = URL(string: text), UIApplication.shared.canOpenURL(url) else { return KotlinBoolean(bool: false) }
                 UIApplication.shared.open(url); return KotlinBoolean(bool: true)
@@ -46,19 +46,18 @@ struct NativeDesk: UIViewControllerRepresentable {
             share: { text in
                 let sheet = UIActivityViewController(activityItems: [text], applicationActivities: nil)
                 if let root = coordinator.controller { sheet.popoverPresentationController?.sourceView = root.view; sheet.popoverPresentationController?.sourceRect = CGRect(x: root.view.bounds.midX, y: root.view.bounds.midY, width: 1, height: 1); root.present(sheet, animated: true) }
-                return KotlinUnit()
             },
-            copy: { UIPasteboard.general.string = $0; return KotlinUnit() },
+            copy: { UIPasteboard.general.string = $0 },
             pickPhoto: { callback in
                 coordinator.photoResult = callback
                 var config = PHPickerConfiguration(); config.filter = .images; config.selectionLimit = 1
                 let picker = PHPickerViewController(configuration: config); picker.delegate = coordinator
-                coordinator.controller?.present(picker, animated: true); return KotlinUnit()
+                coordinator.controller?.present(picker, animated: true)
             },
             pickContact: { callback in
                 coordinator.contactResult = callback
                 let picker = CNContactPickerViewController(); picker.delegate = coordinator
-                coordinator.controller?.present(picker, animated: true); return KotlinUnit()
+                coordinator.controller?.present(picker, animated: true)
             },
             photoData: { path in
                 guard let url = URL(string: path), let data = try? Data(contentsOf: url) else { return nil }
