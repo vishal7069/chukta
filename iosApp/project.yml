@@ -1,0 +1,38 @@
+name: Chukta
+options:
+  bundleIdPrefix: com.chukta
+  deploymentTarget:
+    iOS: "16.0"
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    DEVELOPMENT_TEAM: ""
+    CHUKTA_API_URL: "https://api.example.com"
+targets:
+  Chukta:
+    type: application
+    platform: iOS
+    sources: [Sources]
+    info:
+      path: Info.plist
+      properties:
+        CFBundleDisplayName: Chukta
+        CFBundleURLTypes:
+          - CFBundleURLName: com.chukta.invite
+            CFBundleURLSchemes: [chukta]
+        UILaunchScreen: {}
+        ChuktaApiUrl: "$(CHUKTA_API_URL)"
+        LSApplicationQueriesSchemes: [upi, gpay, phonepe, paytmmp]
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.chukta.app
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        FRAMEWORK_SEARCH_PATHS: "$(inherited) $(SRCROOT)/../shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)"
+        OTHER_LDFLAGS: "$(inherited) -framework ChuktaShared"
+    preBuildScripts:
+      - name: Build shared Kotlin framework
+        script: |
+          cd "$SRCROOT/.."
+          ./gradlew :shared:embedAndSignAppleFrameworkForXcode
+        basedOnDependencyAnalysis: false
