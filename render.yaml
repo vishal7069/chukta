@@ -1,0 +1,33 @@
+# Paid deployment: review billing before creating this Blueprint.
+services:
+  - type: web
+    name: chukta-api
+    runtime: node
+    plan: 0.5c-512mb
+    region: singapore
+    rootDir: server
+    buildCommand: npm test
+    startCommand: node server.mjs
+    healthCheckPath: /health
+    autoDeployTrigger: checksPass
+    disk:
+      name: chukta-data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: NODE_VERSION
+        value: 24.15.0
+      - key: NODE_ENV
+        value: production
+      - key: DEV_AUTH
+        value: "false"
+      - key: DB_PATH
+        value: /var/data/chukta.sqlite
+      - key: TWILIO_ACCOUNT_SID
+        sync: false
+      - key: TWILIO_AUTH_TOKEN
+        sync: false
+      - key: TWILIO_VERIFY_SERVICE_SID
+        sync: false
+      - key: WEB_ORIGIN
+        sync: false

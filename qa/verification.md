@@ -25,7 +25,7 @@ Screenshots are in design/android-login.png, design/android-home.png, design/and
 
 - Public HTTPS API host with a persistent database volume.
 - SMS provider secrets; current local OTP is a development code.
-- Mac/Xcode build verification and Apple signing for the iPhone app. iOS has not been compiled on this Windows host.
+- Apple signing and physical iPhone/TestFlight verification. The shared framework and SwiftUI host compiled successfully in GitHub Actions on macOS / Xcode 16.4 for the ARM64 iPhone simulator (run 38729692208).
 - App-store policy links, bank/provider verification if required, and external notification/reminder providers.
 
 Real UPI transfers and real SMS were not executed in the test. Settlement records are explicitly user_recorded.

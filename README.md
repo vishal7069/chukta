@@ -47,7 +47,7 @@ xcodegen generate
 open Chukta.xcodeproj
 ```
 
-Select your Apple development team and set CHUKTA_API_URL to your HTTPS API URL. The Xcode prebuild script compiles the shared Kotlin framework. A simulator build needs no App Store signing; TestFlight and device distribution require your Apple Developer account. iOS source is prepared but **has not been compiled on this Windows machine**. The GitHub workflow includes a Mac simulator build so platform errors will be visible before distribution.
+Select your Apple development team and set CHUKTA_API_URL to your HTTPS API URL. The Xcode prebuild script compiles the shared Kotlin framework. The iPhone simulator app compiled successfully on GitHub's macOS runner with Xcode 16.4. A simulator build needs no App Store signing; TestFlight and device distribution require your Apple Developer account. The downloadable simulator ZIP targets an Apple Silicon Mac, not a physical iPhone.
 
 ## Implemented flows
 
@@ -65,6 +65,8 @@ Select your Apple development team and set CHUKTA_API_URL to your HTTPS API URL.
 - Native contacts/photo/share/clipboard integration and encrypted Android storage / iOS Keychain sessions.
 
 ## Deployment
+
+The new hosting/SMS setup is prepared in `render.yaml`. Read [live setup and costs](docs/live-setup.md) before activating a paid service. No public API or real SMS service has been activated yet.
 
 GitHub stores source and APK build artifacts. It does not host this persistent API. Deploy `server/Dockerfile` to a container host with HTTPS, a persistent volume mounted at /data, and the SMS environment secrets. SQLite is intended for one service instance. Back up the data volume. To scale to multiple API instances, migrate the database to PostgreSQL.
 
